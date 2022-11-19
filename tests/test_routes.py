@@ -146,3 +146,22 @@ class TestAccountService(TestCase):
             f"{BASE_URL}/0",
         )
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_list_accounts(self):
+        """It should list all accounts"""
+        self._create_accounts(5)
+        resp = self.client.get(
+            f"{BASE_URL}",
+        )
+        accounts = resp.get_json()
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(accounts), 5)
+
+    def test_no_accounts(self):
+        """It should not find accounts"""
+        resp = self.client.get(
+            f"{BASE_URL}",
+        )
+        accounts = resp.get_json()
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(accounts), 0)
