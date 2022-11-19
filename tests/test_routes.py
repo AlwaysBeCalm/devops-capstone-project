@@ -165,3 +165,44 @@ class TestAccountService(TestCase):
         accounts = resp.get_json()
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(accounts), 0)
+
+    def test_update_account(self):
+        """It should update an existing account"""
+        account = self._create_accounts(1)[0]
+        resp = self.client.get(
+            f"{BASE_URL}/{account.id}",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        new_account_info = resp.get_json()
+        new_account_info["name"] = "new_name"
+        new_account_info["email"] = "new_email"
+        new_account_info["address"] = "new_address"
+        new_account_info["phone_number"] = "new_phone_number"
+
+        resp = self.client.put(
+            f"{BASE_URL}/{new_account_info['id']}",
+            json=new_account_info,
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        updated_account = resp.get_json()
+        self.assertEqual(updated_account["name"], new_account_info["name"])
+        self.assertEqual(updated_account["email"], new_account_info["email"])
+        self.assertEqual(updated_account["address"], new_account_info["address"])
+        self.assertEqual(updated_account["phone_number"], new_account_info["phone_number"])
+
+    def test_update_not_found_account(self):
+        """It should try to update a not found account"""
+        new_account_info = dict()
+        new_account_info["name"] = "new_name"
+        new_account_info["email"] = "new_email"
+        new_account_info["address"] = "new_address"
+        new_account_info["phone_number"] = "new_phone_number"
+        resp = self.client.put(
+            f"{BASE_URL}/4",
+            json=new_account_info,
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
