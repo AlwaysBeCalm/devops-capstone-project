@@ -6,7 +6,7 @@ labels: ''
 assignees: ''
 
 ---
-**As a** Developer
+**As a** [role]
 **I need** [function]
 **So that** [benefit]
 
